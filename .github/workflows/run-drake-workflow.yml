@@ -22,11 +22,13 @@ jobs:
         run: echo "REPOSITORY_NAME=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
         shell: bash
 
-      - name: Save key as a file
-        run: 'echo "KEY" > key.json'
-        shell: bash
-        env:
-          KEY: ${{secrets.GC_SA_KEY}}
+      - name: Set up Cloud SDK
+          uses: google-github-actions/setup-gcloud@master
+          with:
+            project_id: ${{ secrets.GCP_PROJECT_ID }}
+            service_account_key: ${{ secrets.GCP_SA_KEY }}
+            export_default_credentials: true
+            credentials_file_path: key.json
 
       - name: Build image with cache
         id: build_docker
