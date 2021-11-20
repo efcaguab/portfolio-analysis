@@ -21,7 +21,7 @@ vignettes/*.pdf
 *.knit.md
 .Renviron
 .drake/*
-_targets/*
+# _targets/*
 
 ## OS X
 .DS_Store
