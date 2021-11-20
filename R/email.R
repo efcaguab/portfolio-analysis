@@ -6,7 +6,7 @@ generate_email <- function(trades_cost_basis){
 
   tax_and_compliance_section <- get_tax_and_compliance(trades_cost_basis)
 
-  email <- compose_email(
+  compose_email(
     title = "Your weekly investment update",
     # header = "Your weekly investment update",
     body = blocks(
@@ -17,13 +17,22 @@ generate_email <- function(trades_cost_basis){
     footer = md(get_footer())
   )
 
-  smtp_send(email,
-    to = "efcaguab@gmail.com",
-    from = "fernando@cagua.co",
-    subject = glue("Weekly investment update ({lubridate::week(lubridate::today())})"),
+}
+
+send_email <- function(email, to = config::get("email_to"), from = Sys.getenv("SMTP_USER"),  subject, host = Sys.getenv("SMTP_SERVER")){
+
+  suppressPackageStartupMessages({
+    library(blastula)
+  })
+
+  smtp_send(
+    email,
+    to = to,
+    from = from,
+    subject = subject,
     credentials = creds_envvar(
-      user = "fernando@cagua.co",
-      host = "smtppro.zoho.com",
+      user = from,
+      host = host,
       port = 465,
       use_ssl = TRUE
     )

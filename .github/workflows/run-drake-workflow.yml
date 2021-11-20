@@ -17,10 +17,16 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@v2
-        
+
       - name: Get repository name
         run: echo "REPOSITORY_NAME=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
         shell: bash
+
+      - name: Save key as a file
+        run: 'echo "KEY" > key.json'
+        shell: bash
+        env:
+          KEY: ${{secrets.GC_SA_KEY}}
 
       - name: Build image with cache
         id: build_docker
@@ -32,4 +38,10 @@ jobs:
           image_name: ${{ env.REPOSITORY_NAME }}
 
       - name: Run Targets workflow
-        run: docker run -v $(pwd):/home -w /home --name rstudio_container ${{ steps.build_docker.outputs.FULL_IMAGE_NAME }} make
+        run: docker run -v $(pwd):/home -w /home --name rstudio_container --env R_CONFIG_ACTIVE --env-file <(env | grep SMTP) ${{ steps.build_docker.outputs.FULL_IMAGE_NAME }} make
+        env:
+          R_CONFIG_ACTIVE: "prod"
+          STMP_USER: ${{secrets.SMTP_USER}}
+          STMP_PASSWORD: ${{secrets.SMTP_PASSWORD}}
+          STMP_SERVER: ${{secrets.SMTP_SERVER}}
+

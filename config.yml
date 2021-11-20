@@ -1,3 +1,9 @@
 default:
   google_sheets_id: "1_HPx9HNcs6zdGBXfLEa4bFZ3bcDIpfzJVnCIkS24Fsw"
   sa_key_path: "auth/portfolio-332121-06517bed545b.json"
+  email_to: ["efcaguab@gmail.com"]
+  skip_email: true
+
+prod:
+  sa_key_path: "key.json"
+  skip_email: false

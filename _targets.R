@@ -61,6 +61,13 @@ reporting_plan <- list(
   tar_target(
     name = email,
     command = generate_email(trades_cost_basis)
+  ),
+  tar_target(
+    name = email_sent,
+    command = send_email(
+      email,
+      subject = glue::glue("Weekly investment update ({lubridate::week(lubridate::today())})")),
+    cue = tar_cue_skip(condition = config::get("skip_email"))
   )
 )
 
