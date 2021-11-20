@@ -58,9 +58,6 @@ data_input_plan <- list(
 
 
 reporting_plan <- list(
-  tar_render(
-    name = report,
-    path = "report.Rmd"),
   tar_target(
     name = email,
     command = generate_email(trades_cost_basis)
