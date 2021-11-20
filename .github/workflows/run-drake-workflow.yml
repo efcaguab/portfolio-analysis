@@ -23,12 +23,12 @@ jobs:
         shell: bash
 
       - name: Set up Cloud SDK
-          uses: google-github-actions/setup-gcloud@master
-          with:
-            project_id: ${{ secrets.GCP_PROJECT_ID }}
-            service_account_key: ${{ secrets.GCP_SA_KEY }}
-            export_default_credentials: true
-            credentials_file_path: key.json
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+          credentials_file_path: key.json
 
       - name: Build image with cache
         id: build_docker
