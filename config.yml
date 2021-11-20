@@ -1,0 +1,3 @@
+default:
+  google_sheets_id: "1_HPx9HNcs6zdGBXfLEa4bFZ3bcDIpfzJVnCIkS24Fsw"
+  sa_key_path: "auth/portfolio-332121-06517bed545b.json"

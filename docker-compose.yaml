@@ -3,8 +3,8 @@ services:
   r:
     build: .
     ports:
-      - "8787:8787"
+      - "8810:8787"
     volumes:
-      - .:/home/rstudio/workspace
+      - .:/home/rstudio/portfolio-analysis
     environment:
       DISABLE_AUTH: "true"
