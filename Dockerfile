@@ -11,6 +11,7 @@ RUN install2.r --error --skipinstalled \
   blastula \
   config \
   googlesheets4 \
+  gt \
   logger \
   tarchetypes \
   targets \
