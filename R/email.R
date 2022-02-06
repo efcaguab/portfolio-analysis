@@ -20,7 +20,7 @@ generate_email <- function(trades_cost_basis, returns){
 
 }
 
-send_email <- function(email, to = config::get("email_to"), from = Sys.getenv("SMTP_USER"),  subject, host = Sys.getenv("SMTP_SERVER")){
+send_email <- function(email, to = config::get("email_to"), from = Sys.getenv("SMTP_USER"),  subject, host = Sys.getenv("SMTP_HOST")){
 
   suppressPackageStartupMessages({
     library(blastula)

@@ -45,5 +45,5 @@ jobs:
           R_CONFIG_ACTIVE: "prod"
           STMP_USER: ${{secrets.SMTP_USER}}
           STMP_PASSWORD: ${{secrets.SMTP_PASSWORD}}
-          STMP_SERVER: ${{secrets.SMTP_SERVER}}
+          STMP_HOST: ${{secrets.SMTP_HOST}}
 
