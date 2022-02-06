@@ -34,6 +34,11 @@ data_input_plan <- list(
     command = get_closing_price(stock_dates),
     pattern = map(stock_dates),
     iteration = "group"),
+  tar_target(
+    name = dividends_stock,
+    command = get_stock_dividends(stock_dates),
+    pattern = map(stock_dates),
+    iteration = "group"),
   tar_group_size(
     name = currency_dates,
     command = calculate_currency_daterange(trades, securities, today),
@@ -53,14 +58,31 @@ data_input_plan <- list(
     command = get_trades_cost_basis(trades, securities, currency_conversions, dates = unique(c(trades$date, today)))),
   tar_target(
     name = current_portfolio,
-    command = get_current_portfolio(trades, securities, stock_prices))
+    command = get_current_portfolio(trades, securities, stock_prices)),
+
+  tar_target(
+    name = allocation_target,
+    command = process_target_allocation(config::get("target_allocation"))),
+  tar_target(
+    name = allocation_current,
+    command = calc_asset_allocation(current_portfolio, allocation_target, currency_conversions)),
+
+  tar_target(
+    name = dividends_portfolio,
+    command = calc_portfolio_dividends(dividends_stock, trades)
+  ),
+  tar_target(
+    name = returns,
+    command = calc_returns(trades, stock_prices, securities, currency_conversions, dividends_portfolio, base_currency = "NZD")
+  )
+
 )
 
 
 reporting_plan <- list(
   tar_target(
     name = email,
-    command = generate_email(trades_cost_basis)
+    command = generate_email(trades_cost_basis, returns)
   ),
   tar_target(
     name = email_sent,

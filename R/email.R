@@ -1,18 +1,19 @@
-generate_email <- function(trades_cost_basis){
+generate_email <- function(trades_cost_basis, returns){
 
   suppressPackageStartupMessages({
     library(blastula)
   })
 
   tax_and_compliance_section <- get_tax_and_compliance(trades_cost_basis)
-
+  # performance_section <- get_performance(returns)
   compose_email(
     title = "Your weekly investment update",
     # header = "Your weekly investment update",
     body = blocks(
-      block_text(md(get_intro(trades_cost_basis))),
+      block_text(md(get_intro(trades_cost_basis, returns))),
       block_spacer(),
-      block_text(md(paste(tax_and_compliance_section)))
+      block_text(md(paste(tax_and_compliance_section))),
+      # block_text(md(performance_section))
     ),
     footer = md(get_footer())
   )
@@ -39,7 +40,7 @@ send_email <- function(email, to = config::get("email_to"), from = Sys.getenv("S
   )
 }
 
-get_intro <- function(trades_cost_basis){
+get_intro <- function(trades_cost_basis, returns){
 
   peak_values <- trades_cost_basis %>%
     group_by(owner, date) %>%
@@ -53,15 +54,33 @@ get_intro <- function(trades_cost_basis){
     filter(as.numeric(fiscal_year) == max(as.numeric(fiscal_year))) %>%
     ungroup()
 
-  peak_cost <- glue_collapse(scales::dollar(peak_values$peak_cost, accuracy = 1), sep = ", ", last = " and ")
+  mf <- scales::number_format(accuracy = 10, prefix = "NZD ", big.mark = ",")
+  pf <- scales::percent_format(accuracy = 0.1)
+
+  peak_cost <- glue_collapse(scales::number(peak_values$peak_cost, accuracy = 1, big.mark = ","), sep = ", ", last = " and ")
   peak_owners <- glue_collapse(peak_values$owner, sep = ", ", last = " and ")
 
+  current_size <- returns$end_value[returns$end_period == max(returns$end_period)]
+  current_return <- returns$roi[returns$end_period == max(returns$end_period)]
+
+  returns_plot <- blastula::add_ggplot(
+    plot_object = visualise_returns(returns),
+    height = 2.5)
+
+  last_period <- slice(returns, which.min(abs(returns$end_period - (max(returns$end_period) - lubridate::days(7)))))
+  size_diff <- current_size - last_period$end_value
 
   glue(
     "
     Hi, here is a summary of Fernando and Peter investments.
 
-    - The peak cost basis for foreign investment funds for the current finantial year are NZD {peak_cost} for {peak_owners} portfolios.
+    The current size of the portfolio is **{mf(current_size)}** compared to {mf(last_period$end_value)} one week ago ({mf(size_diff)}).
+
+    This makes for an overall return of investment of **{pf(current_return)}** since the inception of the portfolio.
+
+    {returns_plot}
+
+    The peak cost basis for foreign investment funds for the current finantial year are NZD {peak_cost} for {peak_owners} portfolios.
 
     Have a look below for more details.
 
@@ -190,4 +209,66 @@ generate_cost_basis_plot <- function(trades_cost_basis){
       x = "Date",
       y = "Value (NZD)") +
     theme(legend.title = element_blank())
+}
+
+## Performance section
+
+get_performance <- function(returns){
+
+  suppressPackageStartupMessages({
+    library(tidyverse)
+    library(gt)
+    library(glue)
+  })
+
+  returns_plot <- blastula::add_ggplot(
+    plot_object = visualise_returns(returns),
+    height = 2.5)
+
+  glue(
+    "
+    ## Performance
+
+    The overal return since the inception of the portfolio are
+
+    {returns_plot}
+    "
+
+  )
+
+}
+
+
+visualise_returns <- function(returns){
+
+  latest_date <- max(returns$end_period)
+  latest_return <- returns$roi[returns$end_period == latest_date]
+
+  returns %>%
+    # filter(end_period >= Sys.Date() - lubridate::days(30)) %>%
+    ggplot(aes(y = roi, x = end_period)) +
+    # geom_line(aes(y = twr)) +
+    geom_line(aes(colour = as.character(last(roi) > first(roi)), group = 1), size = 0.35) +
+    geom_area(aes(fill = as.character(last(roi) > first(roi))), alpha = 0.25) +
+    geom_hline(yintercept = 0, linetype = 2, size = 0.25) +
+    geom_vline(xintercept = as.Date("2021-04-01"), linetype = 2, size = 0.25) +
+    geom_vline(xintercept = as.Date("2022-04-01"), linetype = 2, size = 0.25) +
+    scale_colour_manual(values = c("TRUE" = "darkgreen", "FALSE" = "darkred"), aesthetics = c("colour", "fill")) +
+    scale_y_continuous(labels = scales::percent_format(), expand = c(0, 0)) +
+    scale_x_date(date_breaks = "4 months", date_minor_breaks = "1 month", date_labels = "%b %Y", expand = c(0,0)) +
+    # scale_x_date(expand = c(0,0)) +
+    theme_minimal() +
+    theme(
+      legend.position = "none",
+      axis.title = element_blank()) +
+    labs(
+      # title = paste(
+      #   "Overall Return of Investment:",
+      #   scales::percent(latest_return, accuracy = 0.1)),
+      # subtitle = paste(
+      #   "From inception until",
+      #   latest_date),
+      caption = "Includes capital, currency, and dividend gains.")
+
+
 }

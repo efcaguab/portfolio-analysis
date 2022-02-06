@@ -1,8 +1,13 @@
 default:
   google_sheets_id: "1_HPx9HNcs6zdGBXfLEa4bFZ3bcDIpfzJVnCIkS24Fsw"
-  sa_key_path: "auth/portfolio-332121-06517bed545b.json"
+  sa_key_path: "auth/portfolio-332121-6304caf505ff.json"
   email_to: ["efcaguab@gmail.com"]
   skip_email: true
+  target_allocation:
+    bond_prop: 0.1
+    core_prop: 0.9
+    nz_prop: 0.1
+    us_prop: 0.6131
 
 prod:
   sa_key_path: "key.json"
