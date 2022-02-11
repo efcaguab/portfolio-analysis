@@ -88,7 +88,7 @@ reporting_plan <- list(
     name = email_sent,
     command = send_email(
       email,
-      subject = glue::glue("Weekly investment update ({lubridate::week(lubridate::today())})")),
+      subject = glue::glue("Weekly investment update ({lubridate::year(lubridate::today())} - {lubridate::week(lubridate::today())})")),
     cue = tar_cue_skip(condition = config::get("skip_email"))
   )
 )

@@ -54,7 +54,7 @@ get_intro <- function(trades_cost_basis, returns){
     filter(as.numeric(fiscal_year) == max(as.numeric(fiscal_year))) %>%
     ungroup()
 
-  mf <- scales::number_format(accuracy = 10, prefix = "NZD ", big.mark = ",")
+  mf <- scales::number_format(accuracy = 1, prefix = "NZD ", big.mark = ",")
   pf <- scales::percent_format(accuracy = 0.1)
 
   peak_cost <- glue_collapse(scales::number(peak_values$peak_cost, accuracy = 1, big.mark = ","), sep = ", ", last = " and ")
@@ -65,24 +65,24 @@ get_intro <- function(trades_cost_basis, returns){
 
   returns_plot <- blastula::add_ggplot(
     plot_object = visualise_returns(returns),
-    height = 2.5)
+    height = 3)
 
   last_period <- slice(returns, which.min(abs(returns$end_period - (max(returns$end_period) - lubridate::days(7)))))
   size_diff <- current_size - last_period$end_value
 
   glue(
     "
-    Hi, here is a summary of Fernando and Peter investments.
+    Hi,
 
-    The current size of the portfolio is **{mf(current_size)}** compared to {mf(last_period$end_value)} one week ago ({mf(size_diff)}).
+    As of today ({format(lubridate::today(), '%d %B %Y')}) the size of Fer's and Peter portfolio is **{mf(current_size)}** compared to {mf(last_period$end_value)} one week ago ({mf(size_diff)}).
 
-    This makes for an overall return of investment of **{pf(current_return)}** since the inception of the portfolio.
+    Excluding taxes, this makes for an overall return of investment of **{pf(current_return)}** since inception.
 
     {returns_plot}
 
     The peak cost basis for foreign investment funds for the current finantial year are NZD {peak_cost} for {peak_owners} portfolios.
 
-    Have a look below for more details.
+    More details below.
 
     Cheers,
 
@@ -248,7 +248,7 @@ visualise_returns <- function(returns){
     # filter(end_period >= Sys.Date() - lubridate::days(30)) %>%
     ggplot(aes(y = roi, x = end_period)) +
     # geom_line(aes(y = twr)) +
-    geom_line(aes(colour = as.character(last(roi) > first(roi)), group = 1), size = 0.35) +
+    geom_line(aes(colour = as.character(last(roi) > first(roi)), group = 1), size = 0.25) +
     geom_area(aes(fill = as.character(last(roi) > first(roi))), alpha = 0.25) +
     geom_hline(yintercept = 0, linetype = 2, size = 0.25) +
     geom_vline(xintercept = as.Date("2021-04-01"), linetype = 2, size = 0.25) +
@@ -260,7 +260,8 @@ visualise_returns <- function(returns){
     theme_minimal() +
     theme(
       legend.position = "none",
-      axis.title = element_blank()) +
+      axis.title = element_text(size = 10),
+      axis.title.x = element_blank()) +
     labs(
       # title = paste(
       #   "Overall Return of Investment:",
@@ -268,7 +269,8 @@ visualise_returns <- function(returns){
       # subtitle = paste(
       #   "From inception until",
       #   latest_date),
-      caption = "Includes capital, currency, and dividend gains.")
+      y = "Return",
+      caption = "Includes capital, currency (NZD), and dividend gains.\nExcludes taxes and fees.")
 
 
 }
