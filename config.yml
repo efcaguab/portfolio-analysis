@@ -12,3 +12,4 @@ default:
 prod:
   sa_key_path: "key.json"
   skip_email: false
+  email_to: ["efcaguab@gmail.com", "jahn.petr@gmail.com"]
