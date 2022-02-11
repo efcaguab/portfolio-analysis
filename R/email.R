@@ -20,7 +20,7 @@ generate_email <- function(trades_cost_basis, returns){
 
 }
 
-send_email <- function(email, to = config::get("email_to"), from = Sys.getenv("SMTP_USER"),  subject, host = Sys.getenv("SMTP_HOST")){
+send_email <- function(email, to = config::get("email_to"), from = Sys.getenv("SMTP_USER"),  subject, host = Sys.getenv("SMTP_HOST"), port = Sys.getenv("SMTP_PORT", "465")){
 
   suppressPackageStartupMessages({
     library(blastula)
@@ -34,7 +34,7 @@ send_email <- function(email, to = config::get("email_to"), from = Sys.getenv("S
     credentials = creds_envvar(
       user = from,
       host = host,
-      port = 465,
+      port = port,
       use_ssl = TRUE
     )
   )
