@@ -245,6 +245,8 @@ visualise_returns <- function(returns){
   latest_return <- returns$roi[returns$end_period == latest_date]
 
   returns %>%
+    # group_by(cut(end_period, "week")) %>%
+    # slice_tail(n = 1) %>%
     # filter(end_period >= Sys.Date() - lubridate::days(30)) %>%
     ggplot(aes(y = roi, x = end_period)) +
     # geom_line(aes(y = twr)) +

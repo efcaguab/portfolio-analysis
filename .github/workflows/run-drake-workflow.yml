@@ -1,9 +1,9 @@
 name: Run-Drake-Workflow
 
 on:
-  # push:
-  #   branches:
-  #     - master
+  push:
+    branches:
+      - master
   # pull_request:
   #   branches:
   #     - master
@@ -44,7 +44,7 @@ jobs:
       - name: Run Targets workflow
         run: docker run -v $(pwd):/home -w /home --name rstudio_container --env R_CONFIG_ACTIVE --env-file <(env | grep SMTP) ${{ steps.build_docker.outputs.FULL_IMAGE_NAME }} make
         env:
-          R_CONFIG_ACTIVE: "prod"
+          R_CONFIG_ACTIVE: ${{ github.event_name }}
           SMTP_USER: ${{secrets.SMTP_USER}}
           SMTP_PASSWORD: ${{secrets.SMTP_PASSWORD}}
           SMTP_HOST: ${{secrets.SMTP_HOST}}

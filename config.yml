@@ -9,7 +9,12 @@ default:
     nz_prop: 0.1
     us_prop: 0.6131
 
-prod:
+schedule:
   sa_key_path: "key.json"
   skip_email: false
   email_to: ["efcaguab@gmail.com", "jahn.petr@gmail.com"]
+
+push:
+  sa_key_path: "key.json"
+  skip_email: false
+  email_to: ["efcaguab@gmail.com"]
