@@ -33,7 +33,7 @@ calc_portfolio_dividends <- function(dividends_stock, trades){
     filter(symbol %in% dividends$symbol) %>%
     group_by(symbol) %>%
     mutate(quantity = cumsum(quantity)) %>%
-    complete(date = full_seq(dividends$date, 1), .data$symbol) %>%
+    complete(date = full_seq(dividends$date, 1)) %>%
     fill(quantity) %>%
     replace_na(list(quantity = 0)) %>%
     mutate(dividend_period = cut(
