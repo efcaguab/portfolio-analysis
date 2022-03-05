@@ -8,9 +8,10 @@ get_trades_cost_basis <- function(trades, securities, currency_conversions, date
     summarise(currency = first(currency))
 
   to_nzd_conversions <- currency_conversions %>%
-    filter(to == "NZD")
+    filter(to == base_currency)
 
   trades %>%
+    filter(brokerage_currency != base_currency) %>%
     arrange(date) %>%
     left_join(symbol_currencies, by = "symbol") %>%
     left_join(to_nzd_conversions, by = c("date" = "date", "currency" = "from")) %>%

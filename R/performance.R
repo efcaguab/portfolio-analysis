@@ -7,7 +7,9 @@ calc_returns <- function(trades, stock_prices, securities, currency_conversions,
 
   end_values <-  date_list %>%
     map_dfr(get_value, trades, securities, stock_prices) %>%
-    fill(end_value, .direction = "down")
+    group_by(currency) %>%
+    fill(end_value, .direction = "down") %>%
+    ungroup()
 
   # cash_flow <- date_list %>%
     # map_dfr(get_cash_flow, trades, securities)
@@ -23,14 +25,26 @@ calc_returns <- function(trades, stock_prices, securities, currency_conversions,
     filter(to == base_currency)
 
   end_values_basec <- end_values %>%
-    left_join(to_base_currency, by = c("end_period" = "date")) %>%
+    left_join(to_base_currency, by = c("end_period" = "date", "currency" = "from")) %>%
+    mutate(
+      to = ifelse(currency == base_currency, currency, to),
+      rate = ifelse(currency == base_currency, 1, rate)) %>%
     mutate(end_value = end_value * rate, currency = to) %>%
-    select(-rate, -to, -from)
+    select(-rate, -to) %>%
+    filter(!is.na(currency)) %>%
+    group_by(currency, end_period) %>%
+    summarise(end_value = sum(end_value), .groups = "drop")
 
   cash_flow_basec <- cash_flow_dividends %>%
     left_join(to_base_currency, by = c("end_period" = "date")) %>%
+    mutate(
+      to = ifelse(currency == base_currency, currency, to),
+      rate = ifelse(currency == base_currency, 1, rate)) %>%
     mutate(cash_flow = cash_flow * rate, currency = to) %>%
-    select(-rate, -to, -from)
+    select(-rate, -to, -from) %>%
+    filter(!is.na(currency)) %>%
+    group_by(currency, end_period) %>%
+    summarise(cash_flow = sum(cash_flow), .groups = "drop")
 
   returns_basec <- calc_roi(end_values_basec, cash_flow_basec)
 
