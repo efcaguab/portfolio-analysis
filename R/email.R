@@ -263,7 +263,8 @@ visualise_returns <- function(returns){
     theme(
       legend.position = "none",
       axis.title = element_text(size = 10),
-      axis.title.x = element_blank()) +
+      axis.title.x = element_blank(),
+      plot.margin = unit(c(1,17,1,1), "pt")) +
     labs(
       # title = paste(
       #   "Overall Return of Investment:",
