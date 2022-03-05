@@ -43,7 +43,7 @@ get_closing_price <- function(x){
     as_tibble(rownames = "date") %>%
     select(date, ends_with("Close")) %>%
     pivot_longer(ends_with("Close"), names_to = "symbol", values_to = "closing_price") %>%
-    mutate(symbol = str_remove(symbol, "\\..+$")) %>%
+    mutate(symbol = x$symbol[1]) %>%
     mutate(date = as.Date(date))
 }
 
