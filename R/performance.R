@@ -22,7 +22,10 @@ calc_returns <- function(trades, stock_prices, securities, currency_conversions,
   # returns_dividends <- calc_roi(end_values, cash_flow_dividends)
 
   to_base_currency <- currency_conversions %>%
-    filter(to == base_currency)
+    filter(to == base_currency) %>%
+    group_by(to, from) %>%
+    complete(date = full_seq(date, 1)) %>%
+    fill("rate")
 
   end_values_basec <- end_values %>%
     left_join(to_base_currency, by = c("end_period" = "date", "currency" = "from")) %>%
