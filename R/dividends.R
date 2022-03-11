@@ -26,8 +26,6 @@ calc_portfolio_dividends <- function(dividends_stock, trades){
 
   suppressPackageStartupMessages(library(tidyverse))
 
-  print(trades)
-
   trades %>%
     select(date, symbol, quantity) %>%
     filter(symbol %in% dividends$symbol) %>%
