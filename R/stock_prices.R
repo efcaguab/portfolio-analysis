@@ -39,12 +39,22 @@ get_closing_price <- function(x){
     )
   })
 
+  dates <- xts::.index(symbol_data) %>%
+    as.POSIXct(origin = "1970-01-01", tz = "UTC") %>%
+    as.Date()
+
   symbol_data %>%
-    as_tibble(rownames = "date") %>%
+    as_tibble(rownames = NULL) %>%
+    mutate(date = dates) %>%
+    select(date, everything()) %>%
+    # Sometimes the API returns several values for the same day, keep only the
+    # latest one
+    group_by(date) %>%
+    slice_tail(n = 1) %>%
+    ungroup() %>%
     select(date, ends_with("Close")) %>%
     pivot_longer(ends_with("Close"), names_to = "symbol", values_to = "closing_price") %>%
-    mutate(symbol = x$symbol[1]) %>%
-    mutate(date = as.Date(date))
+    mutate(symbol = x$symbol[1])
 }
 
 calculate_currency_conversions <- function(currency_prices){
