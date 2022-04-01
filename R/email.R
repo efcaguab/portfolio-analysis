@@ -67,18 +67,22 @@ get_intro <- function(trades_cost_basis, returns){
     plot_object = visualise_returns(returns),
     height = 3)
 
-  last_period <- slice(returns, which.min(abs(returns$end_period - (max(returns$end_period) - lubridate::days(7)))))
-  size_diff <- current_size - last_period$end_value
+  # last_period <- slice(returns, which.min(abs(returns$end_period - (max(returns$end_period) - lubridate::days(7)))))
+  # size_diff <- current_size - last_period$end_value
 
   glue(
     "
     Hi,
 
-    As of today ({format(lubridate::today(), '%d %B %Y')}) the size of Fer's and Peter portfolio is **{mf(current_size)}** compared to {mf(last_period$end_value)} one week ago ({mf(size_diff)}).
-
-    Excluding taxes, this makes for an overall return of investment of **{pf(current_return)}** since inception.
+    As of today ({format(lubridate::today(), '%d %B %Y')}) the size of Fer's and Peter portfolio is **{mf(current_size)}**. Excluding taxes, this makes for an overall return of investment of **{pf(current_return)}** since inception.
 
     {returns_plot}
+
+    <br />
+
+    {as_raw_html(summary_returns_table(returns))}
+
+    <br />
 
     The peak cost basis for foreign investment funds for the current finantial year are NZD {peak_cost} for {peak_owners} portfolios.
 
@@ -276,4 +280,61 @@ visualise_returns <- function(returns){
       caption = "Includes capital, currency (NZD), and dividend gains.\nExcludes taxes and fees.")
 
 
+}
+
+
+summary_returns_table <- function(returns){
+  library(gt)
+
+  get_summary_returns(returns) %>%
+    # select(-current_balance) %>%
+    mutate(
+      growth = contributions + dividends + gains,
+      # previous_balance = if_else(previous_balance == 0, NA_real_, previous_balance),
+      time_diff = case_when(
+        time_diff == 7 ~ "Last week",
+        time_diff == 30 ~ "Last month",
+        time_diff == 365 ~ "Last year",
+        TRUE ~ "Since inception"
+      )) %>%
+    rename(
+      "Range" = time_diff,
+      "Total growth" = growth,
+      "Contributions" = contributions,
+      "Dividends" = dividends,
+      "Capital" = gains
+    ) %>%
+    select(-ends_with("balance")) %>%
+    relocate(`Total growth`, .after = last_col()) %>%
+    gt(rowname_col = "Range") %>%
+    tab_spanner(
+      label = "Gains",
+      columns = c(`Dividends`, `Capital`)) %>%
+    # tab_header(
+      # title = "Summary performance") %>%
+    fmt_currency(
+      columns = c("Contributions", "Total growth", "Capital", "Dividends"),
+      accounting = FALSE,
+      decimals = 0,
+      currency = "NZD") %>%
+    fmt(
+      columns = c("Contributions", "Capital", "Dividends"),
+      fns = format_gains) %>%
+    cols_align(
+      align = "right",
+      columns = -starts_with("Range")) %>%
+    tab_source_note("* All values in NZD") %>%
+    tab_options(table.font.size = "14px",
+                heading.title.font.weight = "bold",
+                heading.title.font.size = "15px")
+}
+
+format_gains <- function(x){
+  x_sign <- sign(x)
+  d <- scales::dollar(round(x))
+  case_when(
+    x_sign == 0 ~ d,
+    x_sign == 1 ~ as.character(glue("<span style='color:#006837'>{d}</span>")),
+    x_sign == -1 ~ as.character(glue("<span style='color:#a50026'>{d}</span>"))
+  )
 }
