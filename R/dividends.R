@@ -5,7 +5,6 @@ get_stock_dividends <- function(x){
   suppressMessages({
     symbol_data <- getDividends(
       Symbol = x$symbol[1],
-      env = NULL,
       from = as.character(x$date_start[1] - lubridate::years(2)),
       to = as.character(x$date_end[1]),
       auto.assign = FALSE
