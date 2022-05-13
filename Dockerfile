@@ -1,4 +1,4 @@
-FROM rocker/tidyverse:4.1.2
+FROM rocker/tidyverse:4.2.0
 
 # Run required system installs
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
