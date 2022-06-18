@@ -22,6 +22,9 @@ data_input_plan <- list(
     name = securities,
     command = {sheet_last_modified; get_gs_sheet(range = "securities", col_types = "cdccccc")}),
   tar_target(
+    name = unrated_dividends,
+    command = {sheet_last_modified; get_gs_sheet(range = "unrated_dividends", col_types = "Dcd")}),
+  tar_target(
     name = today,
     command = Sys.Date(),
     cue = tar_cue(mode = "always")),
@@ -69,7 +72,7 @@ data_input_plan <- list(
 
   tar_target(
     name = dividends_portfolio,
-    command = calc_portfolio_dividends(dividends_stock, trades)
+    command = calc_portfolio_dividends(dividends_stock, unrated_dividends, trades)
   ),
   tar_target(
     name = returns,
