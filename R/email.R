@@ -74,7 +74,7 @@ get_intro <- function(trades_cost_basis, returns){
     "
     Hi,
 
-    As of today ({format(lubridate::today(), '%d %B %Y')}) the size of Fer's and Peter portfolio is **{mf(current_size)}**. Excluding taxes, this makes for an overall return of investment of **{pf(current_return)}** since inception.
+    As of today ({format(lubridate::today(), '%d %B %Y')}) the size of Fer and Peter's portfolio is **{mf(current_size)}**. Excluding taxes, this makes for an overall return of investment of **{pf(current_return)}** since inception.
 
     {returns_plot}
 
