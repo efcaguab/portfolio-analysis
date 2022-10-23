@@ -15,5 +15,5 @@ schedule:
 
 push:
   sa_key_path: "key.json"
-  skip_email: false
+  skip_email: true
   email_to: ["efcaguab@gmail.com"]
