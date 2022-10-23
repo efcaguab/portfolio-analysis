@@ -14,3 +14,4 @@ get_date_last_modified <- function(spreadsheet = config::get("google_sheets_id")
     mutate(modified = map_chr(drive_resource, "modifiedTime"))
   x$modified[[1]]
 }
+

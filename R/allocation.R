@@ -1,13 +1,21 @@
 get_current_portfolio <- function(trades, securities, stock_prices){
   suppressPackageStartupMessages(library(tidyverse))
 
-  latest_prices <- stock_prices %>%
-    filter(date == max(date))
-
-  trades %>%
+  current_holdings <- trades %>%
     group_by(owner, broker, symbol) %>%
     summarise(quantity = round(sum(quantity), 10), .groups = "drop") %>%
-    filter(quantity != 0) %>%
+    filter(quantity != 0)
+
+  latest_prices <- stock_prices %>%
+    filter(symbol %in% unique(current_holdings$symbol)) %>%
+    group_by(symbol) %>%
+    mutate(last_date = max(date)) %>%
+    ungroup() %>%
+    filter(date == min(last_date)) %>%
+    select(-last_date)
+
+
+  current_holdings %>%
     left_join(securities, by = "symbol") %>%
     mutate(quantity = quantity * allocation_proportion) %>%
     left_join(latest_prices, by = "symbol") %>%
@@ -29,9 +37,8 @@ process_target_allocation <- function(allocation_target){
     ),
     geography = tribble(
       ~ geography, ~ allocation_target,
-      "nz", allocation_target$nz_prop,
-      "us", (1 - allocation_target$nz_prop) * allocation_target$us_prop,
-      "ex-us", (1 - allocation_target$nz_prop) * (1 - allocation_target$us_prop)
+      "international", allocation_target$int_prop,
+      "domestic", (1 - allocation_target$int_prop)
     )
   )
 }
@@ -40,6 +47,8 @@ calc_asset_allocation <- function(current_portfolio, allocation_target, currency
   suppressPackageStartupMessages(library(tidyverse))
 
   to_nzd_conversions <- currency_conversions %>%
+    complete(date, to, from) %>%
+    mutate(rate = ifelse(to == from, 1, rate)) %>%
     filter(to == base_currency)
 
   current_portfolio <- current_portfolio %>%

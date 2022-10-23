@@ -85,7 +85,7 @@ data_input_plan <- list(
 reporting_plan <- list(
   tar_target(
     name = email,
-    command = generate_email(trades_cost_basis, returns)
+    command = generate_email(trades_cost_basis, returns, allocation_current)
   ),
   tar_target(
     name = email_sent,

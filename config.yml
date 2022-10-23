@@ -5,9 +5,8 @@ default:
   skip_email: true
   target_allocation:
     bond_prop: 0.1
-    core_prop: 0.9
-    nz_prop: 0.1
-    us_prop: 0.6131
+    core_prop: 0.95
+    int_prop: 0.9
 
 schedule:
   sa_key_path: "key.json"
