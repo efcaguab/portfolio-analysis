@@ -13,6 +13,7 @@ RUN install2.r --error --skipinstalled \
   googlesheets4 \
   gt \
   logger \
+  patchwork \
   tarchetypes \
   targets \
   quantmod
