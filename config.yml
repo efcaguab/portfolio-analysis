@@ -17,3 +17,8 @@ push:
   sa_key_path: "key.json"
   skip_email: true
   email_to: ["efcaguab@gmail.com"]
+
+workflow_dispatch:
+  sa_key_path: "key.json"
+  skip_email: false
+  email_to: ["efcaguab@gmail.com", "jahn.petr@gmail.com"]
