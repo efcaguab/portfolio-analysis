@@ -54,6 +54,8 @@ get_intro <- function(trades_cost_basis, returns, allocation_current){
 
   current_size <- returns$end_value[returns$end_period == max(returns$end_period)]
   current_return <- returns$roi[returns$end_period == max(returns$end_period)]
+  time_period <- lubridate::interval(min(returns$end_period),max(returns$end_period)) |> as.numeric("days")
+  annualised_return <- (1 + current_return)^(365/time_period) - 1
 
   needs_rebalance <- max(abs(map_dfr(allocation_current, ~ .)$allocation_diff)) > 0.01
 
@@ -64,7 +66,7 @@ get_intro <- function(trades_cost_basis, returns, allocation_current){
     "
     Hi,
 
-    As of today ({format(lubridate::today(), '%d %B %Y')}) the size of Fer and Peter's portfolio is **{mf(current_size)}**. Excluding taxes, this makes for an overall return of investment of **{pf(current_return)}** since inception.
+    As of today ({format(lubridate::today(), '%d %B %Y')}) the size of Fer and Peter's portfolio is **{mf(current_size)}**. Excluding taxes, this makes for an overall return of investment of **{pf(current_return)}** since inception ({pf(annualised_return)} annualised).
     {ifelse(needs_rebalance, 'The portfolio might need to be rebalanced to match the target allocation.', '') }
 
     More details below.
