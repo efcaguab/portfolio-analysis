@@ -37,7 +37,7 @@ get_closing_price <- function(x){
 
   df |>
     complete(date = full_seq(c(x$date_start, x$date_end), 1)) |>
-    filter(!wday(date, week_start = 1) %in% c(6,7)) |>
+    filter(!lubridate::wday(date, week_start = 1) %in% c(6,7)) |>
     arrange(date) |>
     fill(closing_price, symbol)
 }
@@ -53,7 +53,7 @@ get_closing_price_simplicity <- function(x){
 
   df |>
     rename(date = Date, closing_price = Price) |>
-    mutate(date = dmy(date)) |>
+    mutate(date = lubridate::dmy(date)) |>
     mutate(symbol = x$symbol[1])
 
 }
