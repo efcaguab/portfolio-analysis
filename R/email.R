@@ -298,9 +298,10 @@ visualise_returns <- function(returns){
     geom_vline(xintercept = as.Date("2021-04-01"), linetype = 2, size = 0.25) +
     geom_vline(xintercept = as.Date("2022-04-01"), linetype = 2, size = 0.25) +
     geom_vline(xintercept = as.Date("2023-04-01"), linetype = 2, size = 0.25) +
+    geom_vline(xintercept = as.Date("2024-04-01"), linetype = 2, size = 0.25) +
     scale_colour_manual(values = c("TRUE" = "darkgreen", "FALSE" = "darkred"), aesthetics = c("colour", "fill")) +
     scale_y_continuous(labels = scales::percent_format(), expand = c(0, 0)) +
-    scale_x_date(date_breaks = "4 months", date_minor_breaks = "1 month", date_labels = "%b %Y", expand = c(0,0)) +
+    scale_x_date(date_breaks = "6 months", date_minor_breaks = "3 month", date_labels = "%b %Y", expand = c(0,0), limits = c(ymd("2021-01-01"), NA)) +
     # scale_x_date(expand = c(0,0)) +
     theme_minimal() +
     theme(
