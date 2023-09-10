@@ -1,4 +1,17 @@
 get_stock_dividends <- function(x){
+
+  if(str_ends(x$symbol[1], coll(".CSTM"))) {
+    get_stock_dividends_custom(x)
+  } else {
+    get_stock_dividends_quantmod(x)
+  }
+}
+
+get_stock_dividends_custom <- function(x){
+  NULL
+}
+
+get_stock_dividends_quantmod <- function(x){
   suppressPackageStartupMessages(library(quantmod))
   suppressPackageStartupMessages(library(tidyverse))
 
@@ -10,6 +23,10 @@ get_stock_dividends <- function(x){
       auto.assign = FALSE
     )
   })
+
+  if (length(symbol_data) == 0) {
+    return(NULL)
+  }
 
   symbol_data %>%
     as_tibble(rownames = "date") %>%

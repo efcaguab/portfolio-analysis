@@ -25,6 +25,52 @@ calculate_currency_daterange <- function(trades, securities, today){
 }
 
 get_closing_price <- function(x){
+
+  suppressPackageStartupMessages(library(quantmod))
+  suppressPackageStartupMessages(library(tidyverse))
+
+  if(str_ends(x$symbol[1], coll(".CSTM"))) {
+    df <- get_closing_price_simplicity(x)
+  } else {
+    df <- get_closing_price_quantmod(x)
+  }
+
+  df |>
+    complete(date = full_seq(c(x$date_start, x$date_end), 1)) |>
+    filter(!wday(date, week_start = 1) %in% c(6,7)) |>
+    arrange(date) |>
+    fill(closing_price, symbol)
+}
+
+get_closing_price_simplicity <- function(x){
+
+  if (x$symbol[1] == "SIUGS.CSTM") {
+    df <- "https://simplicity.kiwi/api/download_prices?fund_name=INVUnhedged%20Global%20Share" |>
+      read_curl_csv()
+  } else {
+    stop("Unknown simplicity symbol")
+  }
+
+  df |>
+    rename(date = Date, closing_price = Price) |>
+    mutate(date = dmy(date)) |>
+    mutate(symbol = x$symbol[1])
+
+}
+
+read_curl_csv <- function(x){
+  response <- curl::curl_fetch_memory(x)
+
+  if (response$status == 200) {
+    response$content %>%
+      rawToChar() %>%
+      readr::read_csv(col_types = "cd")
+  } else {
+    stop("Failed to download csv")
+  }
+}
+
+get_closing_price_quantmod <- function(x){
   suppressPackageStartupMessages(library(quantmod))
   suppressPackageStartupMessages(library(tidyverse))
 
