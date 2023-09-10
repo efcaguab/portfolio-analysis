@@ -57,6 +57,7 @@ get_intro <- function(trades_cost_basis, returns, allocation_current){
   time_period <- lubridate::interval(min(returns$end_period),max(returns$end_period)) |> as.numeric("days")
   annualised_return <- (1 + current_return)^(365/time_period) - 1
 
+  allocation_current$allocation <- NULL
   needs_rebalance <- max(abs(map_dfr(allocation_current, ~ .)$allocation_diff)) > 0.01
 
   # last_period <- slice(returns, which.min(abs(returns$end_period - (max(returns$end_period) - lubridate::days(7)))))
@@ -80,6 +81,8 @@ get_intro <- function(trades_cost_basis, returns, allocation_current){
 }
 
 visualise_allocation <- function(allocation_current){
+
+  allocation_current$allocation <- NULL
 
   x <- allocation_current %>%
     imap_dfr(function(x,y){
@@ -116,7 +119,7 @@ visualise_allocation <- function(allocation_current){
         theme(axis.title = element_blank(), strip.text = element_blank(), axis.text.y = element_text(size = 10, colour = "black"))
     })
 
-  pl[[1]] / pl[[2]] / pl[[3]]
+  pl[[1]] / pl[[2]]
 
 
 }
