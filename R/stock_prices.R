@@ -47,6 +47,12 @@ get_closing_price_simplicity <- function(x){
   if (x$symbol[1] == "SIUGS.CSTM") {
     df <- "https://simplicity.kiwi/api/download_prices?fund_name=INVUnhedged%20Global%20Share" |>
       read_curl_csv()
+  } else if (x$symbol[1] == "SINZS.CSTM") {
+    df <- "https://simplicity.kiwi/api/download_prices?fund_name=INVNZ%20Share" |>
+      read_curl_csv()
+  } else if (x$symbol[1] == "SINZB.CSTM") {
+    df <- "https://simplicity.kiwi/api/download_prices?fund_name=INVNZ%20Bond" |>
+      read_curl_csv()
   } else {
     stop("Unknown simplicity symbol")
   }
