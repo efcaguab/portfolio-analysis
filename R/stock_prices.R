@@ -44,13 +44,16 @@ get_closing_price <- function(x){
 
 get_closing_price_simplicity <- function(x){
 
-  if (x$symbol[1] == "SIUGS.CSTM") {
+  if (x$symbol[1] == "SIUGS.CSTM") {  # Unhedged global Share
     df <- "https://simplicity.kiwi/api/download_prices?fund_name=INVUnhedged%20Global%20Share" |>
       read_curl_csv()
-  } else if (x$symbol[1] == "SINZS.CSTM") {
+  } else if (x$symbol[1] == "SIHGB.CSTM") {  # Hedged Global Bond
+    df <- "https://simplicity.kiwi/api/download_prices?fund_name=INVHedged%20Global%20Bond" |>
+      read_curl_csv()
+  } else if (x$symbol[1] == "SINZS.CSTM") {  # New Zealand Share
     df <- "https://simplicity.kiwi/api/download_prices?fund_name=INVNZ%20Share" |>
       read_curl_csv()
-  } else if (x$symbol[1] == "SINZB.CSTM") {
+  } else if (x$symbol[1] == "SINZB.CSTM") {  # New Zealand Bond
     df <- "https://simplicity.kiwi/api/download_prices?fund_name=INVNZ%20Bond" |>
       read_curl_csv()
   } else {
